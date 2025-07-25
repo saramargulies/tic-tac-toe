@@ -1,24 +1,27 @@
 {
-  "name": "tictactoe",
-  "version": "1.0.0",
-  "main": "index.js",
+  "name": "next-frontend",
+  "version": "0.1.0",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "next dev -p 3030",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/saramargulies/TicTacToe.git"
+  "dependencies": {
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "next": "15.4.4"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/saramargulies/TicTacToe/issues"
-  },
-  "homepage": "https://github.com/saramargulies/TicTacToe#readme",
-  "description": "",
   "devDependencies": {
-    "@types/node": "^24.1.0",
-    "typescript": "^5.8.3"
+    "typescript": "^5",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@tailwindcss/postcss": "^4",
+    "tailwindcss": "^4",
+    "eslint": "^9",
+    "eslint-config-next": "15.4.4",
+    "@eslint/eslintrc": "^3"
   }
 }

@@ -12,10 +12,11 @@ export default function GameBoard({
   return (
     <div className="grid grid-cols-3 w-[90vw] max-w-sm">
       {currentBoard.map((square, index) => {
-        let color = square === "X" ? "sky-500" : "";
+        let color = square === "X" ? "text-sky-500" : "text-purple-500";
+        console.log(square, color)
         return (
           <div
-            className={`text-${color} text-purple-500 flex items-center justify-center border border-gray-200 text-[8vw] sm:text-[6vw] md:text-[4vw] font-bold aspect-square`}
+            className={`${color} flex items-center justify-center border border-gray-200 text-[8vw] sm:text-[6vw] md:text-[4vw] font-bold aspect-square`}
             key={index}
             onClick={() => {
               if (square !== "") {
