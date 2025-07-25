@@ -5,8 +5,8 @@ import GameBoard from "./GameBoard";
 
 export default function Home() {
   const [currentBoard, setCurrentBoard] = useState<string[]>([]);
-    let checkForWinner = useMemo(() => {
-    let winningConditions = [
+    const checkForWinner = useMemo(() => {
+    const winningConditions = [
       [0, 1, 2],
       [3, 4, 5],
       [6, 7, 8],
@@ -16,8 +16,8 @@ export default function Home() {
       [0, 4, 8],
       [6, 4, 2],
     ];
-    let xSpots = [];
-    let oSpots = [];
+    const xSpots: number[] = [];
+    const oSpots: number[] = [];
 
     for (let i = 0; i < currentBoard.length; i++) {
       if (currentBoard[i] === "X") {
@@ -26,9 +26,9 @@ export default function Home() {
         oSpots.push(i);
       }
     }
-    for (let winningCondition of winningConditions) {
-      let xWins=winningCondition.every((value: number) => xSpots.includes(value))
-      let oWins=winningCondition.every((value: number) => oSpots.includes(value))
+    for (const winningCondition of winningConditions) {
+      const xWins=winningCondition.every((value: number) => xSpots.includes(value))
+      const oWins=winningCondition.every((value: number) => oSpots.includes(value))
       if (xWins) {
         return "X";
       }
@@ -45,7 +45,7 @@ export default function Home() {
     <div className="font-sans flex flex-col items-center justify-center min-h-screen p-4 sm:p-8">
       <main className="flex flex-col gap-8 items-center justify-center w-full ">
         <div className="mb-4 text-3xl font-extrabold text-gray-900 dark:text-white md:text-5xl lg:text-6xl">
-          Let's Play{" "}
+          Let&apos;s Play{" "}
           <span className="text-transparent bg-clip-text bg-gradient-to-r to-purple-500 from-sky-400">
             TicTacToe
           </span>
