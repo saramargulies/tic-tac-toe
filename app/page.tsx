@@ -58,7 +58,7 @@ export default function Home() {
   useEffect(() => {
     const checkWinner = checkForWinner();
     setWinner(checkWinner);
-    if (computersTurn && checkWinner == "none") {
+    if ((computersTurn && checkWinner == "none")) {
       setCurrentBoard((prev: string[]) => {
         const prevBoard = [...prev];
         const emptyIndexes: number[] = [];
@@ -68,7 +68,7 @@ export default function Home() {
         });
         if (emptySpaces.length !== 0) {
           if (prevBoard[4] === "") {
-            prevBoard[emptyIndexes[3]] = "O";
+            prevBoard[4] = "O";
           } else {
             const randomIndex = Math.floor(Math.random() * emptyIndexes.length);
             prevBoard[emptyIndexes[randomIndex]] = "O";
@@ -100,7 +100,7 @@ export default function Home() {
             onClick={() => {
               const nextBoard = currentBoard.length === 0 ? ["", "", "", "", "", "", "", "", "", ] : []
               setCurrentBoard(nextBoard);
-              setComputersTurn(false);
+              setComputersTurn(first ? false : true);
               setGameOver(false);
             }}
           >
