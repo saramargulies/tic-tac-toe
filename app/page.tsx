@@ -1,11 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import GameBoard from "./GameBoard";
 
 export default function Home() {
   const [currentBoard, setCurrentBoard] = useState<string[]>([]);
-    const checkForWinner = useMemo(() => {
+  const [winner, setWinner] = useState<string>();
+  const [computersTurn, setComputersTurn] = useState<boolean>(false);
+  const [gameOver, setGameOver] = useState<boolean>(false);
+  const checkForWinner = (): string => {
     const winningConditions = [
       [0, 1, 2],
       [3, 4, 5],
@@ -27,20 +30,54 @@ export default function Home() {
       }
     }
     for (const winningCondition of winningConditions) {
-      const xWins=winningCondition.every((value: number) => xSpots.includes(value))
-      const oWins=winningCondition.every((value: number) => oSpots.includes(value))
+      const xWins = winningCondition.every((value: number) =>
+        xSpots.includes(value)
+      );
+      const oWins = winningCondition.every((value: number) =>
+        oSpots.includes(value)
+      );
       if (xWins) {
         return "X";
       }
       if (oWins) {
         return "O";
       }
-      if (xSpots.length + oSpots.length===currentBoard.length && currentBoard.length!==0){
-        return "tie"
+      if (
+        xSpots.length + oSpots.length === currentBoard.length &&
+        currentBoard.length !== 0
+      ) {
+        return "tie";
       }
     }
+    return "none";
+  };
+  useEffect(() => {
+    const checkWinner = checkForWinner();
+    setWinner(checkWinner);
+    if (computersTurn && checkWinner == "none") {
+      setCurrentBoard((prev: string[]) => {
+        const prevBoard = [...prev];
+        const emptyIndexes: number[] = [];
+        const emptySpaces = prevBoard.filter((space, index) => {
+          if (space === "") emptyIndexes.push(index);
+          return space === "";
+        });
+        if (emptySpaces.length !== 0) {
+          if (prevBoard[4] === "") {
+            prevBoard[emptyIndexes[3]] = "O";
+          } else {
+            const randomIndex = Math.floor(Math.random() * emptyIndexes.length);
+            prevBoard[emptyIndexes[randomIndex]] = "O";
+          }
+        }
+        return prevBoard;
+      });
+      setComputersTurn(false);
+    }
+    if (checkWinner != "none") {
+      setGameOver(true);
+    }
   }, [currentBoard]);
-
   return (
     <div className="font-sans flex flex-col items-center justify-center min-h-screen p-4 sm:p-8">
       <main className="flex flex-col gap-8 items-center justify-center w-full ">
@@ -54,20 +91,37 @@ export default function Home() {
         <div className="mx-auto block">
           <button
             className="text-white bg-gradient-to-r from-sky-500 via-sky-600 to-sky-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
-            onClick={() => setCurrentBoard(["", "", "", "", "", "", "", "", ""])}
+            onClick={() => {
+              setCurrentBoard(["", "", "", "", "", "", "", "", ""]);
+              setComputersTurn(false);
+              setGameOver(false);
+            }}
           >
             {currentBoard.length === 0 ? "New Game" : "Restart"}
           </button>
         </div>
         <div className="w-full flex justify-center">
-        {currentBoard.length === 0 ? (
-          <></>
-        ) : (
-          <GameBoard currentBoard={currentBoard} setCurrentBoard={setCurrentBoard} />
-        )}
+          {currentBoard.length === 0 ? (
+            <></>
+          ) : (
+            <GameBoard
+              currentBoard={currentBoard}
+              setCurrentBoard={setCurrentBoard}
+              setComputersTurn={setComputersTurn}
+              gameOver={gameOver}
+            />
+          )}
         </div>
         <div className="w-full flex justify-center">
-          {checkForWinner === "X"? ("You Won! 🎉"): checkForWinner==="O" ? ("You Lost ☹️") : checkForWinner==="tie" ? ( "It's a tie!") : (<></>)}
+          {winner === "X" ? (
+            "You Won! 🎉"
+          ) : winner === "O" ? (
+            "You Lost ☹️"
+          ) : winner === "tie" ? (
+            "It's a tie!"
+          ) : (
+            <></>
+          )}
         </div>
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center"></footer>

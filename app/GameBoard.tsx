@@ -3,11 +3,15 @@
 interface GameBoardProps {
   currentBoard: string[];
   setCurrentBoard: React.Dispatch<React.SetStateAction<string[]>>;
+  setComputersTurn: React.Dispatch<React.SetStateAction<boolean>>;
+  gameOver: boolean
 }
 
 export default function GameBoard({
   currentBoard,
   setCurrentBoard,
+  setComputersTurn,
+  gameOver
 }: GameBoardProps) {
   return (
     <div className="grid grid-cols-3 w-[90vw] max-w-sm">
@@ -18,23 +22,15 @@ export default function GameBoard({
             className={`${color} flex items-center justify-center border border-gray-200 text-[8vw] sm:text-[6vw] md:text-[4vw] font-bold aspect-square`}
             key={index}
             onClick={() => {
-              if (square !== "") {
+              if (square !== "" || gameOver) {
                 return;
               }
               setCurrentBoard((prev: string[]) => {
                 const prevBoard = [...prev];
                 prevBoard[index] = "X";
-                const emptyIndexes: number[] = [];
-                const emptySpaces = prevBoard.filter((space, index) => {
-                  if (space==="") emptyIndexes.push(index);
-                  return space === "";
-                });
-                if (emptySpaces.length !== 0) {
-                  const randomIndex = Math.floor(Math.random() * emptyIndexes.length)
-                  prevBoard[emptyIndexes[randomIndex]] = "O"
-                }
                 return prevBoard;
               });
+              setComputersTurn(true)
             }}
           >
             {square}
