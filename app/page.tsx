@@ -2,12 +2,16 @@
 
 import { useEffect, useState } from "react";
 import GameBoard from "./GameBoard";
+import { ThemeToggler } from "./ThemeToggler";
+import { Toggle } from "@/components/ui/toggle";
 
 export default function Home() {
   const [currentBoard, setCurrentBoard] = useState<string[]>([]);
   const [winner, setWinner] = useState<string>();
   const [computersTurn, setComputersTurn] = useState<boolean>(false);
   const [gameOver, setGameOver] = useState<boolean>(false);
+  const [first, setFirst] = useState<boolean>(true)
+
   const checkForWinner = (): string => {
     const winningConditions = [
       [0, 1, 2],
@@ -79,7 +83,9 @@ export default function Home() {
     }
   }, [currentBoard]);
   return (
+    <>
     <div className="font-sans flex flex-col items-center justify-center min-h-screen p-4 sm:p-8">
+    <ThemeToggler />
       <main className="flex flex-col gap-8 items-center justify-center w-full ">
         <div className="mb-4 text-3xl font-extrabold text-gray-900 dark:text-white md:text-5xl lg:text-6xl">
           Let&apos;s Play{" "}
@@ -87,18 +93,22 @@ export default function Home() {
             TicTacToe
           </span>
         </div>
-
-        <div className="mx-auto block">
+  
+        <div className="flex mx-auto block">
           <button
             className="text-white bg-gradient-to-r from-sky-500 via-sky-600 to-sky-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
             onClick={() => {
-              setCurrentBoard(["", "", "", "", "", "", "", "", ""]);
+              const nextBoard = currentBoard.length === 0 ? ["", "", "", "", "", "", "", "", "", ] : []
+              setCurrentBoard(nextBoard);
               setComputersTurn(false);
               setGameOver(false);
             }}
           >
             {currentBoard.length === 0 ? "New Game" : "Restart"}
           </button>
+          {currentBoard.length===0 && <div className="px-5">Go <Toggle className="mx-2" pressed={first} onPressedChange={()=>setFirst(true)}>First</Toggle><Toggle onPressedChange={()=>setFirst(false)} pressed={!first}>Second</Toggle></div>
+          }
+
         </div>
         <div className="w-full flex justify-center">
           {currentBoard.length === 0 ? (
@@ -126,5 +136,6 @@ export default function Home() {
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center"></footer>
     </div>
+    </>
   );
 }
