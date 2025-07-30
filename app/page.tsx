@@ -5,15 +5,19 @@ import GameBoard from "./GameBoard";
 import { ThemeToggler } from "./ThemeToggler";
 import { Toggle } from "@/components/ui/toggle";
 
+interface xCheck {
+  indices: number[],
+  winningIndex : number | undefined
+}
+
 export default function Home() {
   const [currentBoard, setCurrentBoard] = useState<string[]>([]);
-  const [winner, setWinner] = useState<string>();
+  const [winner, setWinner] = useState<string | number>();
   const [computersTurn, setComputersTurn] = useState<boolean>(false);
   const [gameOver, setGameOver] = useState<boolean>(false);
   const [first, setFirst] = useState<boolean>(true)
 
-  const checkForWinner = (): string => {
-    const winningConditions = [
+  const winningConditions = [
       [0, 1, 2],
       [3, 4, 5],
       [6, 7, 8],
@@ -21,8 +25,11 @@ export default function Home() {
       [1, 4, 7],
       [2, 5, 8],
       [0, 4, 8],
-      [6, 4, 2],
+      [2, 4, 6],
     ];
+
+  const checkForWinner = (): string | number => {
+
     const xSpots: number[] = [];
     const oSpots: number[] = [];
 
@@ -37,6 +44,7 @@ export default function Home() {
       const xWins = winningCondition.every((value: number) =>
         xSpots.includes(value)
       );
+
       const oWins = winningCondition.every((value: number) =>
         oSpots.includes(value)
       );
@@ -46,19 +54,18 @@ export default function Home() {
       if (oWins) {
         return "O";
       }
-      if (
-        xSpots.length + oSpots.length === currentBoard.length &&
-        currentBoard.length !== 0
-      ) {
-        return "tie";
-      }
+      
+    }
+    if (
+      xSpots.length + oSpots.length === currentBoard.length &&
+      currentBoard.length !== 0
+    ) {
+      return "tie";
     }
     return "none";
   };
-  useEffect(() => {
-    const checkWinner = checkForWinner();
-    setWinner(checkWinner);
-    if ((computersTurn && checkWinner == "none")) {
+
+  const makeComputermove = () =>{
       setCurrentBoard((prev: string[]) => {
         const prevBoard = [...prev];
         const emptyIndexes: number[] = [];
@@ -66,9 +73,38 @@ export default function Home() {
           if (space === "") emptyIndexes.push(index);
           return space === "";
         });
+
+        const findOptimalSpot = ()=>{
+          for (const winningCondition of winningConditions){
+            const [a, b, c] = winningCondition
+            const values = [prevBoard[a], prevBoard[b], prevBoard[c]]
+            const xCount = values.filter((v) => v === "X").length;
+            const oCount = values.filter((v) => v === "O").length;
+            const emptyCount = values.filter((v) => v === "").length;
+          
+           if (oCount ===2 && emptyCount === 1){
+            const emptyIndex = winningCondition.find((i) => prevBoard[i] === "");
+              if (typeof emptyIndex === "number") return emptyIndex;
+            }
+
+            if (xCount === 2 && emptyCount === 1) {
+              const emptyIndex = winningCondition.find((i) => prevBoard[i] === "");
+              if (typeof emptyIndex === "number") return emptyIndex;
+            }
+          }
+          return -1;
+        }
+
+        const optimalSpot = findOptimalSpot()
+
         if (emptySpaces.length !== 0) {
+          // Take the center tile ASAP
           if (prevBoard[4] === "") {
             prevBoard[4] = "O";
+          // Block any attempts to win
+          } else if (optimalSpot!==-1){
+            prevBoard[optimalSpot]= "O"
+          // Take a random spot
           } else {
             const randomIndex = Math.floor(Math.random() * emptyIndexes.length);
             prevBoard[emptyIndexes[randomIndex]] = "O";
@@ -76,12 +112,23 @@ export default function Home() {
         }
         return prevBoard;
       });
+
+  }
+useEffect(() => {
+
+  const checkWinner = checkForWinner();
+  if (checkWinner !== "none") {
+    setWinner(checkWinner);
+    setGameOver(true);
+  }
+}, [currentBoard]);
+
+  useEffect(() => {
+    if ((computersTurn && !gameOver)) {
+      makeComputermove()
       setComputersTurn(false);
     }
-    if (checkWinner != "none") {
-      setGameOver(true);
-    }
-  }, [currentBoard]);
+  }, [computersTurn]);
   return (
     <>
     <div className="font-sans flex flex-col items-center justify-center min-h-screen p-4 sm:p-8">
@@ -102,6 +149,7 @@ export default function Home() {
               setCurrentBoard(nextBoard);
               setComputersTurn(first ? false : true);
               setGameOver(false);
+              setWinner(undefined)
             }}
           >
             {currentBoard.length === 0 ? "New Game" : "Restart"}
