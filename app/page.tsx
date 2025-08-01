@@ -16,6 +16,7 @@ export default function Home() {
   const [computersTurn, setComputersTurn] = useState<boolean>(false);
   const [gameOver, setGameOver] = useState<boolean>(false);
   const [first, setFirst] = useState<boolean>(true)
+  const [difficulty, setDifficulty] = useState<number>(2)
 
   const winningConditions = [
       [0, 1, 2],
@@ -81,13 +82,13 @@ export default function Home() {
             const xCount = values.filter((v) => v === "X").length;
             const oCount = values.filter((v) => v === "O").length;
             const emptyCount = values.filter((v) => v === "").length;
-          
-           if (oCount ===2 && emptyCount === 1){
+          // Try to make computer win
+           if (oCount ===2 && emptyCount === 1 && difficulty>2){
             const emptyIndex = winningCondition.find((i) => prevBoard[i] === "");
               if (typeof emptyIndex === "number") return emptyIndex;
             }
-
-            if (xCount === 2 && emptyCount === 1) {
+          // Block player from winning
+            if (xCount === 2 && emptyCount === 1 && difficulty>2)  {
               const emptyIndex = winningCondition.find((i) => prevBoard[i] === "");
               if (typeof emptyIndex === "number") return emptyIndex;
             }
@@ -99,7 +100,7 @@ export default function Home() {
 
         if (emptySpaces.length !== 0) {
           // Take the center tile ASAP
-          if (prevBoard[4] === "") {
+          if (prevBoard[4] === "" && difficulty>1) {
             prevBoard[4] = "O";
           // Block any attempts to win
           } else if (optimalSpot!==-1){
@@ -132,18 +133,17 @@ useEffect(() => {
   return (
     <>
     <div className="font-sans flex flex-col items-center justify-center min-h-screen p-4 sm:p-8">
-    <ThemeToggler />
       <main className="flex flex-col gap-8 items-center justify-center w-full ">
-        <div className="mb-4 text-3xl font-extrabold text-gray-900 dark:text-white md:text-5xl lg:text-6xl">
+        <div className="text-3xl font-extrabold text-gray-900 dark:text-white md:text-5xl lg:text-6xl text-center">
           Let&apos;s Play{" "}
           <span className="text-transparent bg-clip-text bg-gradient-to-r to-purple-500 from-sky-400">
             TicTacToe
           </span>
+    <ThemeToggler />
         </div>
   
-        <div className="flex mx-auto block">
           <button
-            className="text-white bg-gradient-to-r from-sky-500 via-sky-600 to-sky-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+            className="text-white bg-gradient-to-r from-sky-500 via-sky-600 to-sky-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 "
             onClick={() => {
               const nextBoard = currentBoard.length === 0 ? ["", "", "", "", "", "", "", "", "", ] : []
               setCurrentBoard(nextBoard);
@@ -154,10 +154,29 @@ useEffect(() => {
           >
             {currentBoard.length === 0 ? "New Game" : "Restart"}
           </button>
-          {currentBoard.length===0 && <div className="px-5">Go <Toggle className="mx-2" pressed={first} onPressedChange={()=>setFirst(true)}>First</Toggle><Toggle onPressedChange={()=>setFirst(false)} pressed={!first}>Second</Toggle></div>
-          }
+          {currentBoard.length === 0 && (
+            <div className="flex flex-col sm:flex-row sm:justify-start items-center gap-4">
+              {/* Turn Toggle */}
+              <div className="flex flex-col items-center text-center">
+                <div className="font-semibold mb-1">Go</div>
+                <div className="flex gap-2">
+                  <Toggle pressed={first} onPressedChange={() => setFirst(true)}>First</Toggle>
+                  <Toggle pressed={!first} onPressedChange={() => setFirst(false)}>Second</Toggle>
+                </div>
+              </div>
 
-        </div>
+              {/* Difficulty Toggle */}
+              <div className="flex flex-col items-center text-center">
+                <div className="font-semibold mb-1">Difficulty</div>
+                <div className="flex gap-2">
+                  <Toggle pressed={difficulty === 1} onPressedChange={() => setDifficulty(1)}>Easy</Toggle>
+                  <Toggle pressed={difficulty === 2} onPressedChange={() => setDifficulty(2)}>Medium</Toggle>
+                  <Toggle pressed={difficulty === 3} onPressedChange={() => setDifficulty(3)}>Hard</Toggle>
+                </div>
+              </div>
+            </div>
+          )}
+
         <div className="w-full flex justify-center">
           {currentBoard.length === 0 ? (
             <></>
