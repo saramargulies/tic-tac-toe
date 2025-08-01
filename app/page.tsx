@@ -138,7 +138,7 @@ useEffect(() => {
   if (!gameOver && !computersTurn && currentBoard.length !== 0) {
     const xCount = currentBoard.filter((c) => c === "X").length;
     const oCount = currentBoard.filter((c) => c === "O").length;
-    if (xCount > oCount) {
+    if (xCount >= oCount && !first || xCount>oCount && first) {
       setComputersTurn(true);
     }
   }
