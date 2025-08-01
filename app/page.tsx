@@ -5,14 +5,14 @@ import GameBoard from "./GameBoard";
 import { ThemeToggler } from "./ThemeToggler";
 import { Toggle } from "@/components/ui/toggle";
 
-interface xCheck {
-  indices: number[],
-  winningIndex : number | undefined
-}
+type Player = "X" | "O";
+type Cell = Player | ""; // A cell can be empty or contain a mark
+export type Board = Cell[];
+type Winner = Player | "tie" | "none";
 
 export default function Home() {
-  const [currentBoard, setCurrentBoard] = useState<string[]>([]);
-  const [winner, setWinner] = useState<string | number>();
+const [currentBoard, setCurrentBoard] = useState<Board>([]);
+const [winner, setWinner] = useState<"X" | "O" | "tie" | "none" | undefined>(undefined);
   const [computersTurn, setComputersTurn] = useState<boolean>(false);
   const [gameOver, setGameOver] = useState<boolean>(false);
   const [first, setFirst] = useState<boolean>(true)
@@ -29,7 +29,7 @@ export default function Home() {
       [2, 4, 6],
     ];
 
-  const checkForWinner = (): string | number => {
+  const checkForWinner = (): Winner => {
 
     const xSpots: number[] = [];
     const oSpots: number[] = [];
@@ -67,7 +67,8 @@ export default function Home() {
   };
 
   const makeComputermove = () =>{
-      setCurrentBoard((prev: string[]) => {
+    if (gameOver) return;
+      setCurrentBoard((prev) => {
         const prevBoard = [...prev];
         const emptyIndexes: number[] = [];
         const emptySpaces = prevBoard.filter((space, index) => {
@@ -115,21 +116,34 @@ export default function Home() {
       });
 
   }
+// Check for a winner, setGameOver
 useEffect(() => {
-
   const checkWinner = checkForWinner();
   if (checkWinner !== "none") {
     setWinner(checkWinner);
     setGameOver(true);
   }
 }, [currentBoard]);
-
+// Take computers turn when appropriate
   useEffect(() => {
+    if (gameOver) return
     if ((computersTurn && !gameOver)) {
       makeComputermove()
       setComputersTurn(false);
     }
-  }, [computersTurn]);
+  }, [computersTurn, gameOver, difficulty]);
+
+// Allow computer to take turn if game over is false
+useEffect(() => {
+  if (!gameOver && !computersTurn && currentBoard.length !== 0) {
+    const xCount = currentBoard.filter((c) => c === "X").length;
+    const oCount = currentBoard.filter((c) => c === "O").length;
+    if (xCount > oCount) {
+      setComputersTurn(true);
+    }
+  }
+}, [currentBoard, gameOver, computersTurn]);
+
   return (
     <>
     <div className="font-sans flex flex-col items-center justify-center min-h-screen p-4 sm:p-8">
@@ -145,7 +159,7 @@ useEffect(() => {
           <button
             className="text-white bg-gradient-to-r from-sky-500 via-sky-600 to-sky-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 "
             onClick={() => {
-              const nextBoard = currentBoard.length === 0 ? ["", "", "", "", "", "", "", "", "", ] : []
+              const nextBoard: Board = currentBoard.length === 0 ? Array(9).fill("") : []
               setCurrentBoard(nextBoard);
               setComputersTurn(first ? false : true);
               setGameOver(false);

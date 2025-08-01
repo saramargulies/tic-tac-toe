@@ -1,8 +1,10 @@
 "use client";
 
+import { Board } from "./page";
+
 interface GameBoardProps {
-  currentBoard: string[];
-  setCurrentBoard: React.Dispatch<React.SetStateAction<string[]>>;
+  currentBoard: Board;
+  setCurrentBoard: React.Dispatch<React.SetStateAction<Board>>;
   setComputersTurn: React.Dispatch<React.SetStateAction<boolean>>;
   gameOver: boolean
 }
@@ -25,12 +27,11 @@ export default function GameBoard({
               if (square !== "" || gameOver) {
                 return;
               }
-              setCurrentBoard((prev: string[]) => {
+              setCurrentBoard((prev) => {
                 const prevBoard = [...prev];
                 prevBoard[index] = "X";
                 return prevBoard;
               });
-              setComputersTurn(true)
             }}
           >
             {square}
