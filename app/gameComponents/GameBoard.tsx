@@ -5,14 +5,12 @@ import { Board } from "../../lib/types";
 interface GameBoardProps {
   currentBoard: Board;
   setCurrentBoard: React.Dispatch<React.SetStateAction<Board>>;
-  setComputersTurn: React.Dispatch<React.SetStateAction<boolean>>;
   gameOver: boolean
 }
 
 export default function GameBoard({
   currentBoard,
   setCurrentBoard,
-  setComputersTurn,
   gameOver
 }: GameBoardProps) {
   return (

@@ -31,7 +31,7 @@ export default function Home() {
       setWinner(checkWinner);
       setGameOver(true);
       setScore((prev) => {
-        let newScore = { ...prev };
+        const newScore = { ...prev };
         switch (checkWinner) {
           case "X":
             newScore.wins++;
@@ -55,7 +55,7 @@ export default function Home() {
       setCurrentBoard(newBoard);
       setComputersTurn(false);
     }
-  }, [computersTurn, gameOver, difficulty]);
+  }, [computersTurn, gameOver, difficulty, currentBoard]);
 
   // Allow computer to take turn if game over is false
   useEffect(() => {
@@ -66,7 +66,7 @@ export default function Home() {
         setComputersTurn(true);
       }
     }
-  }, [currentBoard, gameOver, computersTurn]);
+  }, [currentBoard, gameOver, computersTurn, first]);
 
   return (
     <>
@@ -149,7 +149,6 @@ export default function Home() {
               <GameBoard
                 currentBoard={currentBoard}
                 setCurrentBoard={setCurrentBoard}
-                setComputersTurn={setComputersTurn}
                 gameOver={gameOver}
               />
             )}
