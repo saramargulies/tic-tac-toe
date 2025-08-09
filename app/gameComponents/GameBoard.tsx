@@ -1,6 +1,6 @@
 "use client";
 
-import { Board } from "./page";
+import { Board } from "../../lib/types";
 
 interface GameBoardProps {
   currentBoard: Board;
